@@ -21,11 +21,12 @@ The controlled action is allowed only when Sibyl returns a complete, valid, curr
 
 ## Judge quick start
 
-Requirements:
+Environment:
 
-- Python 3.10 or newer
-- network access for the first package installation
-- a new local database path for each judge acceptance run
+- Python 3.12 is verified in GitHub Actions
+- project metadata permits Python 3.10 or newer
+- network access is required for the first package installation
+- use a new local database path for each judge acceptance run
 
 ```bash
 python -m pip install -e . pytest
@@ -46,6 +47,8 @@ memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILA
 ```
 
 The three PIDs must be different. Session A writes the human grant and exits. Session B starts in a new Python process, recalls the grant from Sibyl, authorizes the controlled action, writes a human revocation, and exits. Session C starts in another new process, recalls the lineage, and refuses the old authority.
+
+The final command proves fail-closed behavior when authority memory is unavailable. Despite its historical filename, it does not physically delete a Sibyl entity or database; physical deletion acceptance remains an explicit open gate.
 
 For the shortest evaluation path, see [Judge Guide](docs/JUDGE_GUIDE.md). Verified runs and exact evidence are in [Acceptance Evidence](docs/ACCEPTANCE_EVIDENCE.md).
 
@@ -76,13 +79,13 @@ For the shortest evaluation path, see [Judge Guide](docs/JUDGE_GUIDE.md). Verifi
 - `src/evidencebound_recallguard/evaluator.py` — deterministic fail-closed authority evaluation.
 - `src/evidencebound_recallguard/sibyl_store.py` — Sibyl entity adapter and cross-entity filtering.
 - `scripts/judge_acceptance.py` — real SDK, three-process grant/recall/revocation acceptance.
-- `scripts/deletion_acceptance.py` — no-memory fail-closed acceptance.
-- `tests/` — evaluator, adapter, real SDK, CLI, and deletion tests.
-- `.github/workflows/ci.yml` — pinned SDK, test, judge, and deletion gates.
+- `scripts/deletion_acceptance.py` — memory-unavailable fail-closed acceptance; not physical deletion.
+- `tests/` — evaluator, adapter, real SDK, CLI, and memory-unavailable tests.
+- `.github/workflows/ci.yml` — pinned SDK, test, judge, and fail-closed gates.
 - `docs/DEMO_SCRIPT.md` — recording-ready 2–5 minute demo narrative.
 
 ## Build-period boundary
 
-This is a competition build with an independent public history created after the build window opened. Pre-build research remains separately frozen in `evidencebound/evidencebound-labs` on `research/sibyl-2026-prebuild`; it is not represented here as build-period implementation.
+This is a competition build with an independent public history created after the build window opened. Pre-build research remains separately frozen in [`evidencebound/evidencebound-labs`](https://github.com/evidencebound/evidencebound-labs) on [`research/sibyl-2026-prebuild`](https://github.com/evidencebound/evidencebound-labs/tree/research/sibyl-2026-prebuild); it is not represented here as build-period implementation.
 
 See [Build Status](BUILD_STATUS.md) for the current verified and unverified scope.
