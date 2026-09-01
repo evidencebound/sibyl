@@ -79,8 +79,10 @@ They must not be presented as independently tested until tests exist.
 
 These items are not claimed as complete:
 
-- the 2–5 minute public demo video has not been recorded or linked;
-- final submission fields have not been entered or verified on the competition platform;
+- the 2–5 minute public demo video has not been recorded, publicly posted, or anonymously read back;
+- the required public build-log post tagging `@sibylcap` has not been published;
+- the private Sibyl build page URL has not been provided in this workspace;
+- final build-page fields have not been entered, marked ready, or independently read back;
 - any optional partner multiplier or external integration is unimplemented;
 - user adoption, revenue, and impact metrics are unmeasured and must not be invented.
 
