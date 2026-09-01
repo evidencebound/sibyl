@@ -19,6 +19,14 @@ This project does not use memory as decoration or chat history.
 
 The controlled action is allowed only when Sibyl returns a complete, valid, current human authority chain. Missing memory, malformed lineage, sequence gaps, digest tampering, non-human authority, stale evidence, and stale policy all fail closed.
 
+## How memory made this possible
+
+RecallGuard cannot reconstruct authority from the prompt or from process-local state. Session A persists the human grant as structured Sibyl entities. Session B starts as a different OS process and receives only the database path; its authorization result changes because it recalls and validates those entities. Session C likewise recalls the revocation and refuses the old grant. Removing the authority entities leaves a fresh process with no authority to act.
+
+## Partner stacks
+
+No optional partner stack is claimed in the current build. Base and Virtuals are intentionally absent rather than decorative; Sibyl Memory is the only external stack on the critical path.
+
 ## Judge quick start
 
 Environment:
@@ -54,7 +62,7 @@ The three PIDs must be different. Session A writes the human grant and exits. Se
 
 The physical-deletion command writes an active grant, hard-deletes its Sibyl entity through the official `delete_entity` API in a second process, and proves from a third process that no authority rows remain and the action cannot execute. The final command separately proves fail-closed behavior when the entire authority-memory input is unavailable.
 
-For the shortest evaluation path, see [Judge Guide](docs/JUDGE_GUIDE.md). Verified runs and exact evidence are in [Acceptance Evidence](docs/ACCEPTANCE_EVIDENCE.md).
+For the shortest evaluation path, see [Judge Guide](docs/JUDGE_GUIDE.md). Verified runs and exact evidence are in [Acceptance Evidence](docs/ACCEPTANCE_EVIDENCE.md). The remaining public-media and private-build-page fields are tracked in [Submission Draft](docs/SUBMISSION_DRAFT.md).
 
 ## Authority state model
 

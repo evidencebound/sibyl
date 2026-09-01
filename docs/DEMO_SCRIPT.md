@@ -4,6 +4,8 @@ Target duration: 3 minutes 45 seconds. Maximum target: 5 minutes.
 
 Record the terminal at readable zoom. Use a fresh checkout or clean working tree and a new database filename. Do not edit output, substitute fake PIDs, or describe unimplemented integrations.
 
+The fresh-session recall beat is a strict continuity gate. From the first `git rev-parse HEAD` / `date -u` command through the Session C output, record one continuous, unedited screen segment. Keep the commit hash and UTC timestamp visible before the command starts; do not splice, pause, or replace terminal output inside this segment.
+
 ## 0:00–0:20 — Problem
 
 **Screen:** repository README title and one-line description.
@@ -42,11 +44,18 @@ Pause long enough for `0.8.0` and the passing test count to be visible.
 
 **Screen:** terminal.
 
-Run with a new database path:
+Start the continuous segment and run:
 
 ```bash
-python scripts/judge_acceptance.py --db demo-memory.db
+git rev-parse HEAD
+date -u
+python -c "import importlib.metadata as m; print(m.version('sibyl-memory-client'))"
+DEMO_RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)
+echo "DEMO_RUN_ID=$DEMO_RUN_ID"
+python scripts/judge_acceptance.py --db "demo-memory-$DEMO_RUN_ID.db"
 ```
+
+Do not cut from `git rev-parse HEAD` until all three Session lines are visible.
 
 **Narration:**
 
@@ -107,6 +116,8 @@ python scripts/deletion_acceptance.py
 - Repository URL is visible.
 - `sibyl-memory-client` prints `0.8.0`.
 - The full suite passes without skips.
+- The fresh-session beat is one continuous, unedited segment.
+- A commit hash and UTC timestamp are visible before the fresh-session command.
 - Session A, B, and C show three distinct PIDs.
 - Session B shows `AUTHORIZED`.
 - Session C shows `INVALIDATED`.
@@ -115,4 +126,6 @@ python scripts/deletion_acceptance.py
 - No claim of forensic secure file or disk erasure is made.
 - Video duration is between 2 and 5 minutes.
 - No private tokens, local usernames, notifications, or unrelated browser tabs appear.
-- Final public video URL is added to the README and submission only after upload/readback verification.
+- Demo video is published as a public post tagging `@sibylcap`.
+- A separate public build-log post tags `@sibylcap`.
+- Final public URLs are added to the README and private build page only after anonymous/readback verification.
