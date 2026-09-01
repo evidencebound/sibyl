@@ -49,7 +49,7 @@ def test_physical_deletion_roundtrip_uses_three_fresh_processes(tmp_path):
         "governed_action_executed=false"
     ) in cp.stdout
 
-    deletion_pids = re.findall(r"DELETE_[ABC].* pid=(\\d+)", cp.stdout)
+    deletion_pids = re.findall(r"DELETE_[ABC].* pid=(\d+)", cp.stdout)
     assert len(deletion_pids) == 3, cp.stdout
     assert len(set(deletion_pids)) == 3, (
         "Physical deletion sessions A, B, and C must execute in distinct "
