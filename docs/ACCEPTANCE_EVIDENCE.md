@@ -1,8 +1,8 @@
 # Acceptance Evidence
 
-This ledger separates verified current evidence from unrun or future claims. Historical local checks are not promoted to current production evidence.
+This ledger separates verified current evidence from unrun or future claims. Historical local checks are not promoted to current evidence.
 
-## Authoritative baseline
+## Implementation baseline
 
 - Repository: [evidencebound/sibyl](https://github.com/evidencebound/sibyl)
 - Implementation merge commit: [`c81dec01b18f07dc1d73978365135976f1ca0baf`](https://github.com/evidencebound/sibyl/commit/c81dec01b18f07dc1d73978365135976f1ca0baf)
@@ -13,9 +13,7 @@ This ledger separates verified current evidence from unrun or future claims. His
 - Python: 3.12
 - SDK: `sibyl-memory-client==0.8.0`
 
-## Recorded output
-
-The post-merge workflow installed the pinned real SDK and recorded:
+Recorded implementation-baseline output:
 
 ```text
 Successfully installed ... sibyl-memory-client-0.8.0
@@ -26,7 +24,25 @@ SESSION_C INVALIDATED pid=2392
 memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILABLE governed_action_executed=false
 ```
 
-PID values are run-specific. Their significance is that all three are distinct.
+## Documentation checkpoint
+
+- Documentation commit: [`022b37e0f4c3a12e4c878a222391c98f7bbcac1a`](https://github.com/evidencebound/sibyl/commit/022b37e0f4c3a12e4c878a222391c98f7bbcac1a)
+- Branch workflow: [GitHub Actions run 33532206327](https://github.com/evidencebound/sibyl/actions/runs/33532206327)
+- Workflow conclusion: `success`
+- Runtime files: unchanged from `c81dec0`
+
+Recorded documentation-checkpoint output:
+
+```text
+Successfully installed ... sibyl-memory-client-0.8.0
+11 passed in 0.53s
+SESSION_A AUTHORIZED pid=2385
+SESSION_B AUTHORIZED pid=2386
+SESSION_C INVALIDATED pid=2387
+memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILABLE governed_action_executed=false
+```
+
+PID values are run-specific. Their significance is that all three are distinct. Final PR CI is still required after claim corrections and before merge.
 
 ## Claim-to-evidence map
 
@@ -36,9 +52,10 @@ PID values are run-specific. Their significance is that all three are distinct.
 | Authority persists after Session A exits | Session B new-process recall | PASS — `AUTHORIZED` |
 | Revocation survives Session B exit | Session C new-process recall | PASS — `INVALIDATED` |
 | Sessions are separate OS processes | CLI output plus automated distinct-PID assertion | PASS |
-| Missing memory fails closed | deletion acceptance | PASS — `BLOCKED` |
-| Missing memory cannot execute the governed action | deletion acceptance | PASS — `false` |
+| Unavailable memory fails closed | memory-unavailable acceptance | PASS — `BLOCKED` |
+| Unavailable memory cannot execute the governed action | memory-unavailable acceptance | PASS — `false` |
 | Unit and integration suite | pytest in the same workflow | PASS — 11/11 |
+| Physical Sibyl deletion | actual entity/database delete and reread | UNRUN |
 | Public demo video | public media URL | UNRUN / not linked |
 | Competition platform submission | live platform readback | UNVERIFIED |
 | User or revenue impact | production telemetry | UNMEASURED |
@@ -57,10 +74,11 @@ The history preserves the regression cycle:
 
 The acceptance supports only the claims implemented in this repository. It does not claim that:
 
+- a Sibyl entity or database has been physically deleted in the current acceptance;
 - Sibyl itself is tamper-proof against a host with filesystem control;
 - a human identity has been cryptographically verified;
 - a public SaaS deployment exists;
 - production adoption or commercial impact has been measured;
 - optional competition integrations have been completed.
 
-The demonstrated guarantee is narrower and testable: given the stored Sibyl authority lineage, RecallGuard deterministically authorizes or refuses the controlled action, and missing or invalid authority memory fails closed.
+The demonstrated guarantee is narrower and testable: given the stored Sibyl authority lineage, RecallGuard deterministically authorizes or refuses the controlled action, and unavailable or invalid authority memory fails closed.
