@@ -42,7 +42,7 @@ SESSION_C INVALIDATED pid=2387
 memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILABLE governed_action_executed=false
 ```
 
-PID values are run-specific. Their significance is that all three are distinct. Final PR CI is still required after claim corrections and before merge.
+PID values are run-specific. Their significance is that all three are distinct. Every updated PR head must pass a fresh CI run before merge.
 
 ## Claim-to-evidence map
 
