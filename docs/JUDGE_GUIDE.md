@@ -1,10 +1,10 @@
 # Judge Guide
 
-This path verifies the central claim in about five minutes: Sibyl Memory is the only persistence layer carrying human authority across independent processes, and revoked authority does not resurrect.
+This path verifies the central implemented claim in about five minutes: Sibyl Memory is the only persistence layer carrying human authority across independent processes, and revoked authority does not resurrect.
 
 ## 1. Install
 
-Use Python 3.10 or newer from a clean checkout.
+Python 3.12 is verified in GitHub Actions. Project metadata permits Python 3.10 or newer.
 
 ```bash
 python -m pip install -e . pytest
@@ -68,7 +68,7 @@ The grant digest is not passed through stdout, arguments, environment variables,
 
 Use a new database filename before repeating this command; the acceptance intentionally creates an append-only authority lineage.
 
-## 4. Prove deletion/no-memory behavior
+## 4. Prove memory-unavailable behavior
 
 ```bash
 python scripts/deletion_acceptance.py
@@ -80,7 +80,7 @@ Expected output:
 memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILABLE governed_action_executed=false
 ```
 
-This is the required negative proof. When authority memory is missing, the system does not reconstruct permission from the prompt or another fallback.
+This proves the evaluator fails closed when its authority-memory input is unavailable. The script name is historical: it passes `None` to the evaluator and does not physically delete a Sibyl entity or database. Physical deletion acceptance is not yet implemented and remains an open competition gate.
 
 ## 5. Inspect the load-bearing boundary
 
@@ -93,10 +93,12 @@ The smallest useful review surface is:
 - `tests/test_judge_cli.py`
 - `.github/workflows/ci.yml`
 
-The store owns Sibyl reads and writes. The evaluator owns deterministic authorization. The acceptance scripts demonstrate the cross-process and no-memory behaviors. CI pins the real SDK and executes every gate.
+The store owns Sibyl reads and writes. The evaluator owns deterministic authorization. The acceptance scripts demonstrate the cross-process and memory-unavailable behaviors. CI pins the real SDK and executes every current gate.
 
-## Current independent evidence
+## Independent evidence
 
 The implementation merge commit is [`c81dec0`](https://github.com/evidencebound/sibyl/commit/c81dec01b18f07dc1d73978365135976f1ca0baf). Its post-merge GitHub Actions run is [33517924901](https://github.com/evidencebound/sibyl/actions/runs/33517924901).
+
+The documentation checkpoint [`022b37e`](https://github.com/evidencebound/sibyl/commit/022b37e0f4c3a12e4c878a222391c98f7bbcac1a) also passed the same runtime gates in [run 33532206327](https://github.com/evidencebound/sibyl/actions/runs/33532206327). Final PR CI is required before merge.
 
 See [Acceptance Evidence](ACCEPTANCE_EVIDENCE.md) for the exact recorded outputs and claim boundaries.
