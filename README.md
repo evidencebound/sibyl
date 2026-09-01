@@ -33,22 +33,26 @@ python -m pip install -e . pytest
 python -c "import importlib.metadata as m; assert m.version('sibyl-memory-client') == '0.8.0'"
 pytest -q
 python scripts/judge_acceptance.py --db judge-memory.db
+python scripts/physical_deletion_acceptance.py --db physical-deletion.db
 python scripts/deletion_acceptance.py
 ```
 
 Expected acceptance shape:
 
 ```text
-11 passed
+13 passed
 SESSION_A AUTHORIZED pid=<pid-a>
 SESSION_B AUTHORIZED pid=<pid-b>
 SESSION_C INVALIDATED pid=<pid-c>
+DELETE_A AUTHORIZED pid=<pid-a>
+DELETE_B deleted_rows=1 pid=<pid-b>
+DELETE_C HUMAN_REQUIRED reason=NO_AUTHORITY_MEMORY governed_action_executed=false remaining_rows=0 pid=<pid-c>
 memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILABLE governed_action_executed=false
 ```
 
 The three PIDs must be different. Session A writes the human grant and exits. Session B starts in a new Python process, recalls the grant from Sibyl, authorizes the controlled action, writes a human revocation, and exits. Session C starts in another new process, recalls the lineage, and refuses the old authority.
 
-The final command proves fail-closed behavior when authority memory is unavailable. Despite its historical filename, it does not physically delete a Sibyl entity or database; physical deletion acceptance remains an explicit open gate.
+The physical-deletion command writes an active grant, hard-deletes its Sibyl entity through the official `delete_entity` API in a second process, and proves from a third process that no authority rows remain and the action cannot execute. The final command separately proves fail-closed behavior when the entire authority-memory input is unavailable.
 
 For the shortest evaluation path, see [Judge Guide](docs/JUDGE_GUIDE.md). Verified runs and exact evidence are in [Acceptance Evidence](docs/ACCEPTANCE_EVIDENCE.md).
 
@@ -73,14 +77,16 @@ For the shortest evaluation path, see [Judge Guide](docs/JUDGE_GUIDE.md). Verifi
 5. Only `AUTHORIZED` sets `governed_action_executed=true`.
 6. Revocation and correction remain in the lineage; they are not erased or silently overridden.
 7. Recovery is not authority. A new human grant is required.
+8. An explicit hard-delete operation removes only the selected entity's authority rows; a fresh process then requires new human authority.
 
 ## Repository map
 
 - `src/evidencebound_recallguard/evaluator.py` — deterministic fail-closed authority evaluation.
 - `src/evidencebound_recallguard/sibyl_store.py` — Sibyl entity adapter and cross-entity filtering.
 - `scripts/judge_acceptance.py` — real SDK, three-process grant/recall/revocation acceptance.
-- `scripts/deletion_acceptance.py` — memory-unavailable fail-closed acceptance; not physical deletion.
-- `tests/` — evaluator, adapter, real SDK, CLI, and memory-unavailable tests.
+- `scripts/physical_deletion_acceptance.py` — real SDK, three-process hard-delete and fresh-read acceptance.
+- `scripts/deletion_acceptance.py` — memory-unavailable fail-closed acceptance.
+- `tests/` — evaluator, adapter, real SDK, CLI, physical-deletion, and memory-unavailable tests.
 - `.github/workflows/ci.yml` — pinned SDK, test, judge, and fail-closed gates.
 - `docs/DEMO_SCRIPT.md` — recording-ready 2–5 minute demo narrative.
 

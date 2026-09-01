@@ -13,4 +13,5 @@ jobs:
       - run: python -c "import importlib.metadata as m; assert m.version('sibyl-memory-client') == '0.8.0'"
       - run: pytest -q
       - run: python scripts/judge_acceptance.py --db /tmp/judge.db
+      - run: python scripts/physical_deletion_acceptance.py --db /tmp/physical-deletion.db
       - run: python scripts/deletion_acceptance.py

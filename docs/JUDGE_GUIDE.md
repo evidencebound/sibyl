@@ -26,7 +26,7 @@ pytest -q
 Expected result:
 
 ```text
-11 passed
+13 passed
 ```
 
 No real-SDK test may be skipped in the judge environment. The CI job installs the pinned dependency before running the suite.
@@ -68,7 +68,27 @@ The grant digest is not passed through stdout, arguments, environment variables,
 
 Use a new database filename before repeating this command; the acceptance intentionally creates an append-only authority lineage.
 
-## 4. Prove memory-unavailable behavior
+## 4. Prove physical Sibyl row deletion
+
+Use another database path that does not already exist:
+
+```bash
+python scripts/physical_deletion_acceptance.py --db physical-deletion.db
+```
+
+Expected shape:
+
+```text
+DELETE_A AUTHORIZED pid=<pid-a>
+DELETE_B deleted_rows=1 pid=<pid-b>
+DELETE_C HUMAN_REQUIRED reason=NO_AUTHORITY_MEMORY governed_action_executed=false remaining_rows=0 pid=<pid-c>
+```
+
+Session A writes and authorizes a grant. Session B is a new process and permanently removes that exact authority entity through Sibyl's official `delete_entity` API. Session C is a third process, reads the same database, observes zero matching authority rows, and refuses action until a human grants new authority. All three PIDs must differ.
+
+This is an application-level SQLite row hard delete through the official SDK. It does not claim forensic secure erasure of the database file or storage medium.
+
+## 5. Prove memory-unavailable behavior
 
 ```bash
 python scripts/deletion_acceptance.py
@@ -80,25 +100,26 @@ Expected output:
 memory_available=false authority_status=BLOCKED reason=AUTHORITY_MEMORY_UNAVAILABLE governed_action_executed=false
 ```
 
-This proves the evaluator fails closed when its authority-memory input is unavailable. The script name is historical: it passes `None` to the evaluator and does not physically delete a Sibyl entity or database. Physical deletion acceptance is not yet implemented and remains an open competition gate.
+This separately proves the evaluator fails closed when its entire authority-memory input is unavailable. It passes `None` to the evaluator; it is not the physical-deletion test.
 
-## 5. Inspect the load-bearing boundary
+## 6. Inspect the load-bearing boundary
 
 The smallest useful review surface is:
 
 - `src/evidencebound_recallguard/sibyl_store.py`
 - `src/evidencebound_recallguard/evaluator.py`
 - `scripts/judge_acceptance.py`
+- `scripts/physical_deletion_acceptance.py`
 - `scripts/deletion_acceptance.py`
 - `tests/test_judge_cli.py`
 - `.github/workflows/ci.yml`
 
-The store owns Sibyl reads and writes. The evaluator owns deterministic authorization. The acceptance scripts demonstrate the cross-process and memory-unavailable behaviors. CI pins the real SDK and executes every current gate.
+The store owns Sibyl reads, writes, and exact-entity deletion. The evaluator owns deterministic authorization. The acceptance scripts independently demonstrate cross-process recall/revocation, physical row deletion, and memory-unavailable behavior. CI pins the real SDK and executes every current gate.
 
 ## Independent evidence
 
 The implementation merge commit is [`c81dec0`](https://github.com/evidencebound/sibyl/commit/c81dec01b18f07dc1d73978365135976f1ca0baf). Its post-merge GitHub Actions run is [33517924901](https://github.com/evidencebound/sibyl/actions/runs/33517924901).
 
-The documentation checkpoint [`022b37e`](https://github.com/evidencebound/sibyl/commit/022b37e0f4c3a12e4c878a222391c98f7bbcac1a) also passed the same runtime gates in [run 33532206327](https://github.com/evidencebound/sibyl/actions/runs/33532206327). Final PR CI is required before merge.
+The documentation checkpoint [`022b37e`](https://github.com/evidencebound/sibyl/commit/022b37e0f4c3a12e4c878a222391c98f7bbcac1a) passed the prior runtime gates in [run 33532206327](https://github.com/evidencebound/sibyl/actions/runs/33532206327). The physical-deletion checkpoint [`92892da`](https://github.com/evidencebound/sibyl/commit/92892dad00dd65d60932cbe7166f2ad3b1595f75) passed 13 tests in [run 33535080048](https://github.com/evidencebound/sibyl/actions/runs/33535080048). Every updated PR head requires fresh CI before merge.
 
 See [Acceptance Evidence](ACCEPTANCE_EVIDENCE.md) for the exact recorded outputs and claim boundaries.

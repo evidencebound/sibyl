@@ -1,6 +1,6 @@
 # Demo Script
 
-Target duration: 3 minutes 15 seconds. Maximum target: 5 minutes.
+Target duration: 3 minutes 45 seconds. Maximum target: 5 minutes.
 
 Record the terminal at readable zoom. Use a fresh checkout or clean working tree and a new database filename. Do not edit output, substitute fake PIDs, or describe unimplemented integrations.
 
@@ -56,7 +56,23 @@ Point to the three different PIDs.
 
 > Different PIDs prove process separation. The database path is the only shared authority location. The grant digest is not transferred through process memory or command-line arguments.
 
-## 2:05–2:35 — Memory-unavailable proof
+## 2:05–2:45 — Physical deletion proof
+
+**Screen:** terminal.
+
+Run with another new database path:
+
+```bash
+python scripts/physical_deletion_acceptance.py --db demo-physical-deletion.db
+```
+
+**Narration:**
+
+> Session A writes and authorizes a human grant. Session B is another Python process and hard-deletes that exact authority entity through Sibyl's official delete API. Session C opens the same database in a third process. It finds zero authority rows, requires a new human decision, and keeps action execution false.
+
+Point to `deleted_rows=1`, `remaining_rows=0`, and the three different PIDs. Do not describe this as forensic secure erasure of the SQLite file or disk.
+
+## 2:45–3:05 — Memory-unavailable proof
 
 **Screen:** terminal.
 
@@ -68,9 +84,9 @@ python scripts/deletion_acceptance.py
 
 **Narration:**
 
-> This negative path passes unavailable authority memory into the evaluator. RecallGuard returns BLOCKED, reports AUTHORITY_MEMORY_UNAVAILABLE, and keeps governed action execution false. It proves fail-closed behavior without fallback. This command does not physically delete a Sibyl entity; physical deletion acceptance remains open and is not claimed in this demo.
+> This separate negative path removes the entire authority-memory input. RecallGuard returns BLOCKED, reports AUTHORITY_MEMORY_UNAVAILABLE, and keeps governed action execution false. It proves fail-closed behavior without fallback.
 
-## 2:35–3:00 — Trust semantics
+## 3:05–3:30 — Trust semantics
 
 **Screen:** `src/evidencebound_recallguard/evaluator.py`, centered on the lineage validation and final state branches.
 
@@ -78,7 +94,7 @@ python scripts/deletion_acceptance.py
 
 > Every event must come from a human actor and form a contiguous hash-linked lineage. Evidence and policy bindings must still match. Correction and revocation invalidate the old grant. Recovery does not silently restore authority; a distinct human re-grant is required. Malformed or missing lineage fails closed.
 
-## 3:00–3:15 — Close
+## 3:30–3:45 — Close
 
 **Screen:** `docs/ACCEPTANCE_EVIDENCE.md`, showing the current evidence table.
 
@@ -94,8 +110,9 @@ python scripts/deletion_acceptance.py
 - Session A, B, and C show three distinct PIDs.
 - Session B shows `AUTHORIZED`.
 - Session C shows `INVALIDATED`.
+- Physical-deletion output shows one deleted row, zero remaining rows, three distinct PIDs, and action execution false.
 - Memory-unavailable output shows `BLOCKED` and `governed_action_executed=false`.
-- No claim of physical deletion is made until that gate exists.
+- No claim of forensic secure file or disk erasure is made.
 - Video duration is between 2 and 5 minutes.
 - No private tokens, local usernames, notifications, or unrelated browser tabs appear.
 - Final public video URL is added to the README and submission only after upload/readback verification.
