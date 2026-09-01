@@ -24,7 +24,6 @@ The implementation baseline is commit [`c81dec0`](https://github.com/evidencebou
 | Distinct processes | PASS | three distinct PIDs asserted by test |
 | Deletion/no-memory path | PASS | `BLOCKED / AUTHORITY_MEMORY_UNAVAILABLE` |
 | Governed action on missing memory | PASS | `governed_action_executed=false` |
-| Code review | PASS | PR #1: no Critical or Important findings |
 | Post-merge CI | PASS | run 33517924901: success |
 
 ## What the evidence proves
