@@ -17,6 +17,21 @@ class SibylAuthorityMemoryStore:
             raise ValueError("conflicting authority event")
         self._client.set_entity(AUTHORITY_CATEGORY, name, event)
 
+    def delete_authority_events(self, entity_id: str) -> int:
+        rows = self._client.list_entities(category=AUTHORITY_CATEGORY, limit=10_000)
+        names = [
+            row.get("name")
+            for row in rows
+            if isinstance(row.get("body"), dict)
+            and row["body"].get("entity_id") == entity_id
+            and isinstance(row.get("name"), str)
+        ]
+        return sum(
+            1
+            for name in names
+            if self._client.delete_entity(AUTHORITY_CATEGORY, name)
+        )
+
     def load_authority_events(self, entity_id: str) -> list[dict[str, Any]]:
         rows = self._client.list_entities(category=AUTHORITY_CATEGORY, limit=10_000)
         events = [r["body"] for r in rows if isinstance(r.get("body"), dict) and r["body"].get("entity_id") == entity_id]
