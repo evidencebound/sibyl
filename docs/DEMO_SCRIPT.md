@@ -34,7 +34,7 @@ pytest -q
 
 **Narration:**
 
-> The project pins the real Sibyl Memory client at version 0.8.0. The suite covers authority evaluation, lineage failure, cross-entity filtering, real SDK recall, the three-process path, and the deletion path. The judge environment must execute all tests without skips.
+> GitHub Actions verifies Python 3.12, and the project pins the real Sibyl Memory client at version 0.8.0. The suite directly exercises authority evaluation, cross-entity filtering, real SDK recall, the three-process path, and the memory-unavailable path. The judge environment must execute all tests without skips.
 
 Pause long enough for `0.8.0` and the passing test count to be visible.
 
@@ -54,9 +54,9 @@ python scripts/judge_acceptance.py --db demo-memory.db
 
 Point to the three different PIDs.
 
-> Different PIDs prove process separation. The database path is the only shared location. The grant digest is not transferred through process memory or command-line arguments.
+> Different PIDs prove process separation. The database path is the only shared authority location. The grant digest is not transferred through process memory or command-line arguments.
 
-## 2:05–2:35 — Deletion/no-memory proof
+## 2:05–2:35 — Memory-unavailable proof
 
 **Screen:** terminal.
 
@@ -68,7 +68,7 @@ python scripts/deletion_acceptance.py
 
 **Narration:**
 
-> The negative path is the critical proof. With the authority-memory layer unavailable, RecallGuard returns BLOCKED, reports AUTHORITY_MEMORY_UNAVAILABLE, and keeps governed action execution false. Memory is therefore necessary for the action, not an optional enhancement.
+> This negative path passes unavailable authority memory into the evaluator. RecallGuard returns BLOCKED, reports AUTHORITY_MEMORY_UNAVAILABLE, and keeps governed action execution false. It proves fail-closed behavior without fallback. This command does not physically delete a Sibyl entity; physical deletion acceptance remains open and is not claimed in this demo.
 
 ## 2:35–3:00 — Trust semantics
 
@@ -84,7 +84,7 @@ python scripts/deletion_acceptance.py
 
 **Narration:**
 
-> RecallGuard demonstrates a compact human control plane for persistent agents: remember authority when valid, preserve its lineage, and refuse to act when authority is missing, stale, corrected, or revoked. Every claim shown here is reproducible from the public repository and its GitHub Actions evidence.
+> RecallGuard demonstrates a compact human control plane for persistent agents: remember authority when valid, preserve its lineage, and refuse to act when authority is unavailable, stale, corrected, or revoked. Every claim shown here is reproducible from the public repository and its GitHub Actions evidence.
 
 ## Recording acceptance checklist
 
@@ -94,7 +94,8 @@ python scripts/deletion_acceptance.py
 - Session A, B, and C show three distinct PIDs.
 - Session B shows `AUTHORIZED`.
 - Session C shows `INVALIDATED`.
-- Deletion output shows `BLOCKED` and `governed_action_executed=false`.
+- Memory-unavailable output shows `BLOCKED` and `governed_action_executed=false`.
+- No claim of physical deletion is made until that gate exists.
 - Video duration is between 2 and 5 minutes.
 - No private tokens, local usernames, notifications, or unrelated browser tabs appear.
 - Final public video URL is added to the README and submission only after upload/readback verification.
